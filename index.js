@@ -314,7 +314,24 @@ async function run() {
       res.send(result);
     });
 
-
+    // update a payment request
+    app.patch(
+      "/payments/:id",
+      verifyToken,
+      verifyRole("Admin"),
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updatedPayment = {
+          $set: req.body,
+        };
+        const result = await paymentCollection.updateOne(
+          filter,
+          updatedPayment
+        );
+        res.send(result);
+      }
+    );
 
 
     // Connect the client to the server	(optional starting in v4.7)
