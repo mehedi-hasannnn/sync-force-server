@@ -150,6 +150,39 @@ async function run() {
     });
 
 
+        // Get role by user email
+    app.get("/users/roles/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+
+      // Use aggregate to get roles
+      const roles = await userCollection
+        .aggregate([
+          { $group: { _id: "$role" } },
+          { $project: { _id: 0, role: "$_id" } },
+        ])
+        .toArray();
+
+        
+      const isAdmin = user.role === "Admin";
+      const isHR = user.role === "HR";
+      const isEmployee = user.role === "Employee";
+
+      res.send({
+        userRole: user.role,
+        isAdmin,
+        isHR,
+        isEmployee,
+      });
+    });
+
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
