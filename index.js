@@ -211,6 +211,22 @@ async function run() {
       }
     );
 
+        // update a task
+    app.patch(
+      "/tasks/:id",
+      verifyToken,
+      verifyRole("Employee"),
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updatedTask = {
+          $set: req.body,
+        };
+        const result = await taskCollection.updateOne(filter, updatedTask);
+        res.send(result);
+      }
+    );
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
