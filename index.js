@@ -341,7 +341,17 @@ async function run() {
       res.send(result);
     });
 
-
+        app.get(
+      "/payments/email/:email",
+      verifyToken,
+      verifyRole("Employee"),
+      async (req, res) => {
+        const email = req.params.email;
+        const query = { email: email };
+        const result = await paymentCollection.find(query).toArray();
+        res.send(result);
+      }
+    );
 
 
 
