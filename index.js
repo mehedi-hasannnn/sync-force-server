@@ -249,6 +249,20 @@ async function run() {
     );
 
 
+        // delete a task from db
+    app.delete(
+      "/tasks/:id",
+      verifyToken,
+      verifyRole("Employee"),
+      async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await taskCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
