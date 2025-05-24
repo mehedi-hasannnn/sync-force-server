@@ -198,6 +198,19 @@ async function run() {
     });
 
 
+    // employee related apis
+
+        app.post(
+      "/tasks",
+      verifyToken,
+      verifyRole("Employee"),
+      async (req, res) => {
+        const user = req.body;
+        const result = await taskCollection.insertOne(user);
+        res.send(result);
+      }
+    );
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
