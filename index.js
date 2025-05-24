@@ -117,6 +117,39 @@ async function run() {
       res.send(result);
     });
 
+        // update a user
+    app.patch("/users/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      /* when admin adjust user's salary i want to update salary field from paymentCollection as well*/
+      if (req.body.salary !== undefined) {
+        const newSalary = req.body.salary;
+
+        // Update salary field
+        const updatedSalary = { $set: { salary: newSalary } };
+        const updatedUser = await userCollection.updateOne(
+          filter,
+          updatedSalary
+        );
+
+        if (updatedUser.modifiedCount > 0) {
+          // update salary field from payments
+          const user = await userCollection.findOne(filter);
+          const paymentFilter = { email: user.email };
+          const updatedPayment = { $set: { salary: newSalary } };
+          await paymentCollection.updateMany(paymentFilter, updatedPayment);
+
+          return res.send(updatedUser);
+        }
+      }
+
+      // If no salary update, update other fields
+      const updatedUser = { $set: req.body };
+      const result = await userCollection.updateOne(filter, updatedUser);
+      res.send(result);
+    });
+
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
