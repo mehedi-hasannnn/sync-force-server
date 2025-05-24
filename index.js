@@ -227,6 +227,27 @@ async function run() {
       }
     );
 
+        // get all tasks
+    app.get("/tasks", verifyToken, verifyRole("HR"), async (req, res) => {
+      const result = await taskCollection.find().toArray();
+      res.send(result);
+    });
+    // get a specific user posted tasks
+    app.get(
+      "/tasks/:email",
+      verifyToken,
+      verifyRole("Employee"),
+      async (req, res) => {
+        const email = req.params.email;
+        if (email !== req.decoded.email) {
+          return res.status(403).send({ message: "forbidden access" });
+        }
+        const query = { employee_email: email };
+        const result = await taskCollection.find(query).toArray();
+        res.send(result);
+      }
+    );
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
