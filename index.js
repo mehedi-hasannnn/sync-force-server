@@ -262,6 +262,19 @@ async function run() {
       }
     );
 
+    // message related apis 
+
+        // post a message to the db
+    app.post("/messages", async (req, res) => {
+      const message = req.body;
+      const result = await messageCollection.insertOne(message);
+      res.send(result);
+    });
+    // get all messages
+    app.get("/messages", verifyToken, verifyRole("Admin"), async (req, res) => {
+      const result = await messageCollection.find().toArray();
+      res.send(result);
+    });
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
