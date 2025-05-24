@@ -276,6 +276,39 @@ async function run() {
       res.send(result);
     });
 
+
+
+    // payment related apis
+    
+        app.post("/payments", verifyToken, verifyRole("HR"), async (req, res) => {
+      const { email, month, year } = req.body;
+      const existingPayment = await paymentCollection.findOne({
+        email,
+        month,
+        year,
+      });
+
+      if (existingPayment) {
+        return res.status(400).json({
+          message: "Payment already exists for selected month and year.",
+        });
+      }
+
+      const payRequest = req.body;
+      const result = await paymentCollection.insertOne(payRequest);
+
+      if (result.insertedId) {
+        res
+          .status(201)
+          .send({ message: "Payment request successfully created." });
+      } else {
+        res.status(500).json({ message: "Failed to create payment request." });
+      }
+    });
+
+
+
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
