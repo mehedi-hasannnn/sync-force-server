@@ -371,6 +371,35 @@ async function run() {
     });
 
 
+        // Get user details and payment history for chart
+    app.get(
+      "/employee-details/:email",
+      verifyToken,
+      verifyRole("HR"),
+      async (req, res) => {
+        const { email } = req.params;
+        // details
+        const userQuery = { email: email };
+        const userDetails = await userCollection.findOne(userQuery);
+
+        // payment history
+        const paymentQuery = { email: email };
+        const paymentHistory = await paymentCollection
+          .find(paymentQuery)
+          .toArray();
+
+        //format history for the chart
+        const salaryHistory = paymentHistory.map((payment) => ({
+          month: payment.month,
+          year: payment.year,
+          salary: payment.salary,
+        }));
+
+        res.send({ userDetails, salaryHistory });
+      }
+    );
+
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
