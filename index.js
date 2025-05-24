@@ -333,6 +333,17 @@ async function run() {
       }
     );
 
+    // get a single user payment
+    app.get("/payments/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await paymentCollection.findOne(query);
+      res.send(result);
+    });
+
+
+
+
 
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
