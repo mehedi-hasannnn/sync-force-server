@@ -169,7 +169,7 @@ async function run() {
         ])
         .toArray();
 
-        
+
       const isAdmin = user.role === "Admin";
       const isHR = user.role === "HR";
       const isEmployee = user.role === "Employee";
@@ -180,6 +180,21 @@ async function run() {
         isHR,
         isEmployee,
       });
+    });
+
+
+        // fire status check for login
+    app.get("/users/fired-status", async (req, res) => {
+      const { email } = req.query;
+
+      const user = await userCollection.findOne({ email });
+
+      if (!user) {
+        return res.status(404).send({ error: "User not found" });
+      }
+
+      // Send the isFired status of the user
+      res.send({ isFired: user.isFired });
     });
 
 
