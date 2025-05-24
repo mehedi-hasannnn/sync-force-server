@@ -355,6 +355,23 @@ async function run() {
 
 
 
+    // payment intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const { salary } = req.body;
+      const amount = parseInt(salary * 100);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "bdt",
+        payment_method_types: ["card"],
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
+    });
+
+
+
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
