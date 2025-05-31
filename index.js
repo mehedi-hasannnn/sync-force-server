@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const stripe = require("stripe")(process.env.STRIPE_SECRE_KEY);
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const corsOptions = {
   origin: [
@@ -127,10 +127,7 @@ async function run() {
 
         // Update salary field
         const updatedSalary = { $set: { salary: newSalary } };
-        const updatedUser = await userCollection.updateOne(
-          filter,
-          updatedSalary
-        );
+        const updatedUser = await userCollection.updateOne(filter,updatedSalary);
 
         if (updatedUser.modifiedCount > 0) {
           // update salary field from payments
@@ -314,24 +311,25 @@ async function run() {
       res.send(result);
     });
 
-    // update a payment request
-    app.patch(
-      "/payments/:id",
-      verifyToken,
-      verifyRole("Admin"),
-      async (req, res) => {
-        const id = req.params.id;
-        const filter = { _id: new ObjectId(id) };
-        const updatedPayment = {
-          $set: req.body,
-        };
-        const result = await paymentCollection.updateOne(
-          filter,
-          updatedPayment
-        );
-        res.send(result);
-      }
-    );
+
+// Update a payment request
+app.patch(
+  "/payments/:id",
+  verifyToken,
+  verifyRole("Admin"),
+  async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const updatedPayment = {
+      $set: req.body,
+    };
+    const result = await paymentCollection.updateOne(filter, updatedPayment);
+    res.send(result);
+  }
+);
+
+
+
 
     // get a single user payment
     app.get("/payments/:id", verifyToken, async (req, res) => {
@@ -401,11 +399,10 @@ async function run() {
 
 
 
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+   
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
