@@ -10,8 +10,8 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "https://sync-force-bd.web.app/",
-    "https://timely-donut-097bf2.netlify.app/",
+    "https://sync-force-bd.web.app",
+    "https://timely-donut-097bf2.netlify.app",
   ],
   credentials: true,
 };
